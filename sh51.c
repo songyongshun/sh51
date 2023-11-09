@@ -43,6 +43,7 @@ u8 i;
 u8 flag;
 u8 cmd_flag=0;
 u8 ex_flag=0;
+u8 es_flag=0;
 u8 rcmd1; //算是全局变量
 u8 rcmd2;
 
@@ -117,22 +118,19 @@ void print_logout()
 void main()
 {	
 	UsartInit();  //	串口初始化
-	ES=0;
-	print_header();
-	ES=1;
 	flag=1;
-	while(!ex_flag)
+	if(!es_flag) //没有键入时
 	{
-		if(flag==1)
-		{
-			ES=0;
-			SBUF=0X0D;
-			while(!TI);
-			TI=0;
-			print_header();
-			ES=1;
-			delay(50000);
-		}
+		ES=0;
+		SBUF=0X0D;
+		while(!TI);
+		TI=0;
+		print_header();
+		ES=1;
+		delay(50000);
+	}
+	while(!ex_flag)
+	{ //不退出空转
 	}
 	SBUF=0X0D;
         while(!TI)
@@ -151,8 +149,7 @@ void main()
 void Usart() interrupt 4
 {
 	u8 receiveData;
-	//u8 pre;
-	//pre=SBUF;
+	es_flag=1;
 	ES=0;
 	receiveData=SBUF;//出去接收到的数据, 结束后会RI=1.
 	RI = 0;//清除接收中断标志位
@@ -166,8 +163,6 @@ void Usart() interrupt 4
 		rcmd1=receiveData;
 		if(receiveData==0X0D)
 		{
-			type_enter();
-			// print_nf();
 			type_enter();
 			print_header();
 			flag=1; //刷新前置字符
