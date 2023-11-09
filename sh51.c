@@ -134,6 +134,12 @@ void main()
 			delay(50000);
 		}
 	}
+	SBUF=0X0D;
+        while(!TI)
+        TI=0;
+//      delay(10000);
+        print_logout();
+        while(1); //不然会再次进入main();
 }
 
 /*******************************************************************************
@@ -161,7 +167,7 @@ void Usart() interrupt 4
 		if(receiveData==0X0D)
 		{
 			type_enter();
-			print_nf();
+			// print_nf();
 			type_enter();
 			print_header();
 			flag=1; //刷新前置字符
